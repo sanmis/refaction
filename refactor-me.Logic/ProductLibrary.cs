@@ -14,13 +14,11 @@ namespace refactor_me.Logic
     public class ProductLibrary : AbstractLogic, IProductLibrary
     {
         private readonly IGenericRepository<Product> _productRepository;
-        private readonly IUnitOfWork _productUnitOfWork;
 
         public ProductLibrary(IPersistanceFactory persistanceFactory, IMapper mapper) : base(mapper)
         {
             Mapper = mapper;
             _productRepository = persistanceFactory.BuildRefactorMeRepository<Product>();
-            _productUnitOfWork = persistanceFactory.RefactorMetUnitOfWork();
         }
 
         public List<ProductView> GetAll()

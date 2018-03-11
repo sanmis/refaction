@@ -46,10 +46,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AbstractLogic.cs" />
-    <Compile Include="IProductLibrary.cs" />
+    <Compile Include="Interface\IProductLibrary.cs" />
+    <Compile Include="Interface\IProductOptionLibrary.cs" />
     <Compile Include="Mappings\APIProductMappings.cs" />
     <Compile Include="Mappings\APIProductOptionMappings.cs" />
     <Compile Include="ProductLibrary.cs" />
+    <Compile Include="ProductOptionLibrary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

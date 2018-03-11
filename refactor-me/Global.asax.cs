@@ -11,6 +11,7 @@ using AutoMapper;
 using refactor_me.Data;
 using refactor_me.Data.Interface;
 using refactor_me.Logic;
+using refactor_me.Logic.Interface;
 
 namespace refactor_me
 {
@@ -24,6 +25,7 @@ namespace refactor_me
             builder.RegisterApiControllers(Assembly.GetExecutingAssembly());
             builder.RegisterType<PersistanceFactory>().As<IPersistanceFactory>(); 
             builder.RegisterType<ProductLibrary>().As<IProductLibrary>().InstancePerLifetimeScope();
+            builder.RegisterType<ProductOptionLibrary>().As<IProductOptionLibrary>().InstancePerLifetimeScope();
 
             ConfigureAutomapper(builder);
             var container = builder.Build();

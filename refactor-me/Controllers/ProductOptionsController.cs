@@ -1,28 +1,31 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Web.Http;
-using refactor_me.Logic;
+using refactor_me.Logic.Interface;
 using refactor_me.ViewModels;
 
 namespace refactor_me.Controllers
 {
-    [RoutePrefix("products")]
-    public class ProductsController : ApiController
+    [RoutePrefix("productOptions")]
+    public class ProductOptionsController : ApiController
     {
-        private readonly IProductLibrary _productLibrary;
+        private readonly IProductOptionLibrary _productOptionLibrary;
 
-        public ProductsController(IProductLibrary productLibrary)
+        public ProductOptionsController(IProductOptionLibrary productOptionLibrary)
         {
-            _productLibrary = productLibrary;
+            _productOptionLibrary = productOptionLibrary;
         }
 
-        [Route("all")]
+        [Route("{productId}/options")]
         [HttpGet]
-        public IHttpActionResult GetAll()
+        public IHttpActionResult GetOptions(Guid productId)
         {
             try
             {
-                var result = _productLibrary.GetAll();
+                var result = _productOptionLibrary.GetOptions(productId, Guid.Empty);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -31,28 +34,13 @@ namespace refactor_me.Controllers
             }
         }
 
-        [Route("{id}")]
+        [Route("{productId}/options/{id}")]
         [HttpGet]
-        public IHttpActionResult GetProduct(Guid id)
+        public IHttpActionResult GetOption(Guid productId, Guid id)
         {
             try
             {
-                var result = _productLibrary.Get(id, null);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message + ex.InnerException?.Message + ex.InnerException?.StackTrace);
-            }
-        }
-
-        [Route("search/{name}")]
-        [HttpGet]
-        public IHttpActionResult SearchProduct(string name)
-        {
-            try
-            {
-                var result = _productLibrary.Get(Guid.Empty, name);
+                var result = _productOptionLibrary.GetOptions(productId, id);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -63,11 +51,11 @@ namespace refactor_me.Controllers
 
         [Route("create")]
         [HttpPost]
-        public IHttpActionResult Create(ProductView product)
+        public IHttpActionResult CreateOption(ProductOptionView option)
         {
             try
             {
-                _productLibrary.Create(product);
+                _productOptionLibrary.Create(option);
                 return Ok();
             }
             catch (Exception ex)
@@ -78,11 +66,11 @@ namespace refactor_me.Controllers
 
         [Route("update")]
         [HttpPut]
-        public IHttpActionResult Update(ProductView product)
+        public IHttpActionResult UpdateOption(ProductOptionView option)
         {
             try
             {
-                _productLibrary.Update(product);
+                _productOptionLibrary.Update(option);
                 return Ok();
             }
             catch (Exception ex)
@@ -93,11 +81,11 @@ namespace refactor_me.Controllers
 
         [Route("delete/{id}")]
         [HttpDelete]
-        public IHttpActionResult Delete(Guid id)
+        public IHttpActionResult DeleteOption(Guid id)
         {
             try
             {
-                _productLibrary.Delete(id);
+                _productOptionLibrary.Delete(id);
                 return Ok();
             }
             catch (Exception ex)
