@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AutoMapper;
-using refactor_me.Data;
 using refactor_me.Data.Interface;
 using refactor_me.Models;
 using refactor_me.ViewModels;

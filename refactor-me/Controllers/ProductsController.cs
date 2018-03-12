@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net;
 using System.Web.Http;
 using refactor_me.Logic;
 using refactor_me.ViewModels;

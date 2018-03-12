@@ -16,7 +16,7 @@ namespace refactor_me
             GlobalConfiguration.Configuration
                 .EnableSwagger(c =>
                     {
-                        c.SingleApiVersion("v1", "refactor_me");
+                        c.SingleApiVersion("v1", "refactor_me"); // version number can be provided in app settings file
                     })
                 .EnableSwaggerUi(c =>
                     {

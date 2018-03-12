@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.Entity.Core.Objects;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using refactor_me.Data.Interface;
 using refactor_me.Data.Results;
 
