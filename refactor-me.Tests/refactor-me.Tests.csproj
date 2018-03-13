@@ -137,7 +137,8 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="LogicTests.cs" />
+    <Compile Include="ProductLibraryTests.cs" />
+    <Compile Include="ProductOptionsLibraryTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

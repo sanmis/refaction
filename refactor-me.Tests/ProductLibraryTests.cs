@@ -15,30 +15,25 @@ using refactor_me.ViewModels;
 namespace refactor_me.Tests
 {
     [TestFixture]
-    public class LogicTests
+    public class ProductLibraryTests
     {
         IProductLibrary _productLibrary;
-        IProductOptionLibrary _productOptionLibrary;
         IGenericRepository<Product> _productRepository;
-        IGenericRepository<ProductOption> _productOptionRepository;
         IMapper _mapper;
         IPersistanceFactory _persistanceFactory;
         List<Product> _products;
-        List<ProductOption> _productOptions;
+        
 
         [SetUp]
         public void Setup()
         {
             _products = SetupProducts();
-            _productOptions = SetupProductOptions();
             _productRepository = SetupProductRepository();
-            _productOptionRepository = SetupProductOptionsRepository();
             var mapperConfig = new MapperConfiguration(cfg =>
                          cfg.AddProfiles(new[] { "refactor-me.Logic", "refactor-me.Data" }));
             _mapper = new Mapper(mapperConfig);
             _persistanceFactory = new Mock<IPersistanceFactory>().Object;
             _productLibrary = new ProductLibrary(_persistanceFactory, _mapper, _productRepository);
-            _productOptionLibrary = new ProductOptionLibrary(_persistanceFactory, _mapper, _productOptionRepository);
         }
 
         public List<Product> SetupProducts()
@@ -50,18 +45,6 @@ namespace refactor_me.Tests
             };
         }
 
-        public List<ProductOption> SetupProductOptions()
-        {
-            return new List<ProductOption>()
-            {
-                new ProductOption() {Id = Guid.Parse("0643CCF0-AB00-4862-B3C5-40E2731ABCC9"), Name = "White", ProductId = Guid.Parse("8F2E9176-35EE-4F0A-AE55-83023D2DB1A3"), Description = "White Samsung Galaxy S7"},
-                new ProductOption() {Id = Guid.Parse("A21D5777-A655-4020-B431-624BB331E9A2"), Name = "Black", ProductId = Guid.Parse("8F2E9176-35EE-4F0A-AE55-83023D2DB1A3"), Description = "Black Samsung Galaxy S7"},
-                new ProductOption() {Id = Guid.Parse("5C2996AB-54AD-4999-92D2-89245682D534"), Name = "Rose Gold", ProductId = Guid.Parse("DE1287C0-4B15-4A7B-9D8A-DD21B3CAFEC3"), Description = "Gold Apple iPhone 6S"},
-                new ProductOption() {Id = Guid.Parse("9AE6F477-A010-4EC9-B6A8-92A85D6C5F03"), Name = "White", ProductId = Guid.Parse("DE1287C0-4B15-4A7B-9D8A-DD21B3CAFEC3"), Description = "White Apple iPhone 6S"},
-                new ProductOption() {Id = Guid.Parse("4E2BC5F2-699A-4C42-802E-CE4B4D2AC0EF"), Name = "Black", ProductId = Guid.Parse("8F2E9176-35EE-4F0A-AE55-83023D2DB1A3"), Description = "Black Apple iPhone 6S"},
-            };
-        }
-
         public IGenericRepository<Product> SetupProductRepository()
         {
             var repo = new Mock<IGenericRepository<Product>>();
@@ -69,7 +52,7 @@ namespace refactor_me.Tests
             repo.Setup(r => r.GetAll()).Returns(_products.AsQueryable());
 
             repo.Setup(r => r.Find(It.IsAny<Expression<Func<Product, bool>>>()))
-                .Returns(new Func<Guid, Product>(id => _products.Find(p => p.Id.Equals(id))));
+                .Returns<Expression<Func<Product, bool>>>(e => _products.Where(e.Compile()).AsQueryable());
 
             repo.Setup(r => r.Add(It.IsAny<Product>())).Callback(new Action<Product>(
                 newProduct =>
@@ -99,15 +82,7 @@ namespace refactor_me.Tests
 
             return repo.Object;
         }
-
-        public IGenericRepository<ProductOption> SetupProductOptionsRepository()
-        {
-            var repo = new Mock<IGenericRepository<ProductOption>>();
-
-            repo.Setup(r => r.GetAll()).Returns(_productOptions.AsQueryable());
-
-            return repo.Object;
-        }
+        
 
         [Test]
         public void GetAll()
@@ -115,36 +90,65 @@ namespace refactor_me.Tests
             var products = _productLibrary.GetAll();
             var countShouldBe = _products.Count;
             var countIs = products.Count;
+            Assert.AreEqual(countShouldBe, countIs);
         }
 
+        [Test]
         public void GetById()
         {
             var products = _productLibrary.Get(Guid.Parse("8F2E9176-35EE-4F0A-AE55-83023D2DB1A3"), null);
+            var product = _products.Find(x => x.Id == Guid.Parse("8F2E9176-35EE-4F0A-AE55-83023D2DB1A3"));
+            Assert.AreEqual(products.First().Id, product.Id);
+            Assert.AreEqual(products.First().Name, product.Name);
+            Assert.AreEqual(products.First().Description, product.Description);
+            Assert.AreEqual(products.First().DeliveryPrice, product.DeliveryPrice);
+            Assert.AreEqual(products.First().Price, product.Price);
         }
 
+        [Test]
         public void GetByName()
         {
             var products = _productLibrary.Get(Guid.Empty, "Samsung Galaxy S7");
+            var product =  _products.Find(x => x.Name == "Samsung Galaxy S7");
+            Assert.AreEqual(products.First().Id, product.Id);
+            Assert.AreEqual(products.First().Name, product.Name);
+            Assert.AreEqual(products.First().Description, product.Description);
+            Assert.AreEqual(products.First().DeliveryPrice, product.DeliveryPrice);
+            Assert.AreEqual(products.First().Price, product.Price);
         }
 
+        [Test]
         public void Create()
         {
+            var countShouldBe = _products.Count + 1;
+
             var product = new Product() {Id = Guid.NewGuid(), Name = "Nokia", Description = "Old school", Price = new decimal(200), DeliveryPrice = new decimal(0.00)};
 
             _productLibrary.Create(MapProductToProductView(product));
+            var countIs = _products.Count;
+
+            Assert.AreEqual(countIs, countShouldBe);
         }
 
+        [Test]
         public void Update()
         {
             var productExisting = _products.First();
             productExisting.Description = "this is updated";
             _productLibrary.Update(MapProductToProductView(productExisting));
+
+            Assert.That(_products.First().Description, Is.EqualTo(productExisting.Description));
         }
 
+        [Test]
         public void Delete()
         {
+            var countShouldBe = _products.Count - 1;
             var productExisting = _products.First();
             _productLibrary.Delete(productExisting.Id);
+            var countIs = _products.Count;
+
+            Assert.AreEqual(countIs, countShouldBe);
         }
 
         #region privateMethods

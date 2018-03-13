@@ -22,7 +22,7 @@ namespace refactor_me.Logic
         public List<ProductOptionView> GetOptions(Guid productId, Guid id)
         {
             if (id != Guid.Empty)
-                return Mapper.Map<List<ProductOptionView>>(_productOptionRepository.Find(x => x.Id == id && x.ProductId == productId)).ToList();
+                return Mapper.Map<List<ProductOptionView>>(_productOptionRepository.Find(x => x.Id == id)).ToList();
 
             return
                 Mapper.Map<List<ProductOptionView>>(_productOptionRepository.Find(x => x.ProductId == productId))
