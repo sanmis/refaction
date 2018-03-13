@@ -12,10 +12,10 @@ namespace refactor_me.Logic
     {
         private readonly IGenericRepository<Product> _productRepository;
 
-        public ProductLibrary(IPersistanceFactory persistanceFactory, IMapper mapper) : base(mapper)
+        public ProductLibrary(IPersistanceFactory persistanceFactory, IMapper mapper, IGenericRepository<Product> productRepository ) : base(mapper)
         {
             Mapper = mapper;
-            _productRepository = persistanceFactory.BuildRefactorMeRepository<Product>();
+            _productRepository = persistanceFactory.BuildRefactorMeRepository<Product>() ?? productRepository;
         }
 
         public List<ProductView> GetAll()

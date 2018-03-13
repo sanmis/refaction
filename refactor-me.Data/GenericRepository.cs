@@ -52,7 +52,7 @@ namespace refactor_me.Data
 
         public void Add(T entity)
         {
-            _dbSet.Add(entity);
+           _dbSet.Add(entity);
         }
 
         public void Update(T entity)
